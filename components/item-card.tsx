@@ -96,7 +96,7 @@ export function ItemCard({ item }: ItemCardProps) {
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="w-4 h-4 shrink-0" />
-              <span>{new Date(item.date).toLocaleDateString()}</span>
+              <span>{item.date}</span>
             </div>
           </div>
         </CardContent>

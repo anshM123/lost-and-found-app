@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { useState, useEffect } from "react";
 import type { Item, Claim } from "./types";
 
@@ -124,75 +125,87 @@ interface StoreState {
   logout: () => void;
 }
 
-export const useStore = create<StoreState>((set, get) => ({
-  items: sampleItems,
-  claims: sampleClaims,
-  isAdmin: false,
-  
-  addItem: (itemData) => {
-    const newItem: Item = {
-      ...itemData,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-    };
-    set((state) => ({ items: [...state.items, newItem] }));
-  },
-  
-  updateItemStatus: (id, status) => {
-    set((state) => ({
-      items: state.items.map((item) =>
-        item.id === id ? { ...item, status } : item
-      ),
-    }));
-  },
-  
-  addClaim: (claimData) => {
-    const newClaim: Claim = {
-      ...claimData,
-      id: crypto.randomUUID(),
-      status: "pending",
-      createdAt: new Date().toISOString(),
-    };
-    set((state) => ({ claims: [...state.claims, newClaim] }));
-    // Note: Item stays visible until claim is approved by admin
-  },
-  
-  updateClaimStatus: (id, status) => {
-    const claim = get().claims.find((c) => c.id === id);
-    
-    // Update both claim and item status atomically
-    set((state) => {
-      const updatedClaims = state.claims.map((c) =>
-        c.id === id ? { ...c, status } : c
-      );
+export const useStore = create<StoreState>()(
+  persist(
+    (set, get) => ({
+      items: sampleItems,
+      claims: sampleClaims,
+      isAdmin: false,
       
-      // If approved, also mark the item as resolved
-      let updatedItems = state.items;
-      if (claim && status === "approved") {
-        updatedItems = state.items.map((item) =>
-          item.id === claim.itemId ? { ...item, status: "resolved" } : item
-        );
-      }
+      addItem: (itemData) => {
+        const newItem: Item = {
+          ...itemData,
+          id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+        };
+        set((state) => ({ items: [...state.items, newItem] }));
+      },
       
-      return {
-        claims: updatedClaims,
-        items: updatedItems,
-      };
-    });
-  },
-  
-  login: (username, password) => {
-    if (username === "Admin" && password === "12345678") {
-      set({ isAdmin: true });
-      return true;
+      updateItemStatus: (id, status) => {
+        set((state) => ({
+          items: state.items.map((item) =>
+            item.id === id ? { ...item, status } : item
+          ),
+        }));
+      },
+      
+      addClaim: (claimData) => {
+        const newClaim: Claim = {
+          ...claimData,
+          id: crypto.randomUUID(),
+          status: "pending",
+          createdAt: new Date().toISOString(),
+        };
+        set((state) => ({ claims: [...state.claims, newClaim] }));
+        // Note: Item stays visible until claim is approved by admin
+      },
+      
+      updateClaimStatus: (id, status) => {
+        const claim = get().claims.find((c) => c.id === id);
+        
+        // Update both claim and item status atomically
+        set((state) => {
+          const updatedClaims = state.claims.map((c) =>
+            c.id === id ? { ...c, status } : c
+          );
+          
+          // If approved, also mark the item as resolved
+          let updatedItems = state.items;
+          if (claim && status === "approved") {
+            updatedItems = state.items.map((item) =>
+              item.id === claim.itemId ? { ...item, status: "resolved" } : item
+            );
+          }
+          
+          return {
+            claims: updatedClaims,
+            items: updatedItems,
+          };
+        });
+      },
+      
+      login: (username, password) => {
+        if (username === "Admin" && password === "12345678") {
+          set({ isAdmin: true });
+          return true;
+        }
+        return false;
+      },
+      
+      logout: () => {
+        set({ isAdmin: false });
+      },
+    }),
+    {
+      name: "lost-found-storage",
+      // Only persist claims and items, not admin status
+      partialize: (state) => ({ 
+        items: state.items, 
+        claims: state.claims 
+      }),
     }
-    return false;
-  },
-  
-  logout: () => {
-    set({ isAdmin: false });
-  },
-}));
+  )
+);
 
 // Hook to handle hydration - prevents hydration mismatch
 export function useHydration() {
