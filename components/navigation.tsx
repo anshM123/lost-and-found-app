@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useStore } from "@/lib/store";
+import { useStore, useHydration } from "@/lib/store";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: Search },
@@ -23,9 +23,13 @@ const navItems = [
 ];
 
 export function Navigation() {
+  const hydrated = useHydration();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isAdmin, logout } = useStore();
+  
+  // Avoid rendering auth-dependent UI until hydrated
+  const showAdminButton = hydrated && isAdmin;
 
   return (
     <>
@@ -67,7 +71,7 @@ export function Navigation() {
         </nav>
 
         <div className="p-4 border-t border-sidebar-border">
-          {isAdmin ? (
+          {showAdminButton ? (
             <Button
               variant="outline"
               className="w-full justify-start gap-2 bg-sidebar-accent/30 border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
@@ -134,7 +138,7 @@ export function Navigation() {
               })}
             </ul>
             <div className="mt-4 pt-4 border-t border-sidebar-border">
-              {isAdmin ? (
+              {showAdminButton ? (
                 <Button
                   variant="outline"
                   className="w-full justify-start gap-2 bg-sidebar-accent/30 border-sidebar-border text-sidebar-foreground"

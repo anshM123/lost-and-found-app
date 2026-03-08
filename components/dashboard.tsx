@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ItemCard } from "./item-card";
-import { useStore } from "@/lib/store";
+import { useStore, useHydration } from "@/lib/store";
 import type { ItemStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -18,9 +18,47 @@ const filterOptions: { value: ItemStatus | "all"; label: string; icon: React.Ele
 ];
 
 export function Dashboard() {
+  const hydrated = useHydration();
   const { items } = useStore();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<ItemStatus | "all">("all");
+
+  // Show loading state until hydrated to prevent mismatch
+  if (!hydrated) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Lost & Found Dashboard
+          </h1>
+          <p className="text-muted-foreground">
+            Browse reported items and submit claims for your belongings
+          </p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-card border border-border rounded-lg p-4 animate-pulse">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-muted" />
+                <div className="space-y-2">
+                  <div className="h-6 w-8 bg-muted rounded" />
+                  <div className="h-4 w-16 bg-muted rounded" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="h-10 bg-muted rounded animate-pulse mb-6" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-card border border-border rounded-lg p-4 h-48 animate-pulse">
+              <div className="h-full bg-muted rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const filteredItems = items.filter((item) => {
     const matchesSearch =

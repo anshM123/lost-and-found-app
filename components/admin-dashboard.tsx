@@ -32,15 +32,54 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useStore } from "@/lib/store";
+import { useStore, useHydration } from "@/lib/store";
 import type { Claim } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export function AdminDashboard() {
+  const hydrated = useHydration();
   const { items, claims, updateClaimStatus, logout } = useStore();
   const [search, setSearch] = useState("");
   const [selectedClaim, setSelectedClaim] = useState<Claim | null>(null);
   const [confirmAction, setConfirmAction] = useState<"approve" | "reject" | null>(null);
+
+  if (!hydrated) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Shield className="w-6 h-6 text-primary" />
+              <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+            </div>
+            <p className="text-muted-foreground">
+              Manage pending claims and review item reports
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          {[1, 2, 3].map((i) => (
+            <Card key={i}>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-muted animate-pulse" />
+                  <div className="space-y-2">
+                    <div className="h-6 w-8 bg-muted rounded animate-pulse" />
+                    <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="h-48 bg-muted rounded animate-pulse" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const pendingClaims = claims.filter((c) => c.status === "pending");
   const resolvedClaims = claims.filter((c) => c.status !== "pending");

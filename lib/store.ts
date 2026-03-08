@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { useState, useEffect } from "react";
 import type { Item, Claim } from "./types";
 
 // Sample data for demonstration
@@ -179,3 +180,14 @@ export const useStore = create<StoreState>((set, get) => ({
     set({ isAdmin: false });
   },
 }));
+
+// Hook to handle hydration - prevents hydration mismatch
+export function useHydration() {
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  return hydrated;
+}
