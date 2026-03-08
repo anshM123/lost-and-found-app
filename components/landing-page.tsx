@@ -198,6 +198,16 @@ export function LandingPage() {
               Built for FBLA Website Design Competition
             </p>
           </div>
+          <div className="mt-6 pt-6 border-t border-border text-center">
+            <a 
+              href="https://alliance.forsyth.k12.ga.us/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sm text-primary hover:underline"
+            >
+              Visit Alliance Academy for Innovation Official Website
+            </a>
+          </div>
         </div>
       </footer>
     </div>
