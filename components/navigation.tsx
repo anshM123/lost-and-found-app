@@ -1,23 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   Search,
-  Package,
   PlusCircle,
   Shield,
   Menu,
   X,
   LogOut,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useStore, useHydration } from "@/lib/store";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: Search },
+  { href: "/", label: "Home", icon: Home },
+  { href: "/dashboard", label: "Dashboard", icon: Search },
   { href: "/report", label: "Report Item", icon: PlusCircle },
   { href: "/admin", label: "Admin Portal", icon: Shield },
 ];
@@ -35,15 +37,19 @@ export function Navigation() {
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-sidebar-border">
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-sidebar-primary">
-            <Package className="w-5 h-5 text-sidebar-primary-foreground" />
-          </div>
+        <Link href="/" className="flex items-center gap-3 px-6 py-5 border-b border-sidebar-border hover:bg-sidebar-accent/30 transition-colors">
+          <Image
+            src="/images/logo.png"
+            alt="Alliance Academy for Innovation Logo"
+            width={44}
+            height={44}
+            className="rounded-full"
+          />
           <div>
             <h1 className="font-semibold text-lg">Lost & Found</h1>
-            <p className="text-xs text-sidebar-foreground/70">School Portal</p>
+            <p className="text-xs text-sidebar-foreground/70">Alliance Academy</p>
           </div>
-        </div>
+        </Link>
 
         <nav className="flex-1 px-4 py-6">
           <ul className="space-y-2">
@@ -94,12 +100,16 @@ export function Navigation() {
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-sidebar text-sidebar-foreground border-b border-sidebar-border">
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sidebar-primary">
-              <Package className="w-4 h-4 text-sidebar-primary-foreground" />
-            </div>
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/images/logo.png"
+              alt="Alliance Academy Logo"
+              width={32}
+              height={32}
+              className="rounded-full"
+            />
             <span className="font-semibold">Lost & Found</span>
-          </div>
+          </Link>
           <Button
             variant="ghost"
             size="icon"

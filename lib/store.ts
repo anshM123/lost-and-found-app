@@ -154,16 +154,25 @@ export const useStore = create<StoreState>((set, get) => ({
   },
   
   updateClaimStatus: (id, status) => {
+    const claim = get().claims.find((c) => c.id === id);
+    
+    // Update both claim and item status atomically
     set((state) => {
-      const claim = state.claims.find((c) => c.id === id);
+      const updatedClaims = state.claims.map((c) =>
+        c.id === id ? { ...c, status } : c
+      );
+      
+      // If approved, also mark the item as resolved
+      let updatedItems = state.items;
       if (claim && status === "approved") {
-        // Mark item as resolved when claim is approved
-        get().updateItemStatus(claim.itemId, "resolved");
+        updatedItems = state.items.map((item) =>
+          item.id === claim.itemId ? { ...item, status: "resolved" } : item
+        );
       }
+      
       return {
-        claims: state.claims.map((c) =>
-          c.id === id ? { ...c, status } : c
-        ),
+        claims: updatedClaims,
+        items: updatedItems,
       };
     });
   },
