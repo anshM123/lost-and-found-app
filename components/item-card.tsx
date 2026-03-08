@@ -75,13 +75,10 @@ export function ItemCard({ item }: ItemCardProps) {
         </CardHeader>
 
         <CardContent className="p-4">
-          <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="mb-2">
             <h3 className="font-semibold text-lg text-foreground line-clamp-1">
               {item.name}
             </h3>
-            <Badge variant="secondary" className="shrink-0 text-xs">
-              {item.type === "lost" ? "Lost" : "Found"}
-            </Badge>
           </div>
 
           <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
@@ -107,11 +104,7 @@ export function ItemCard({ item }: ItemCardProps) {
         <CardFooter className="p-4 pt-0">
           {item.status === "resolved" ? (
             <Button variant="secondary" className="w-full" disabled>
-              Claimed
-            </Button>
-          ) : item.status === "pending" ? (
-            <Button variant="secondary" className="w-full" disabled>
-              Claim Pending
+              Returned to Owner
             </Button>
           ) : (
             <Button
